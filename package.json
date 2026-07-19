@@ -1,0 +1,233 @@
+{
+  "name": "vscode-elisp",
+  "displayName": "Emacs Lisp",
+  "description": "Language support for Emacs Lisp — syntax highlighting (special forms, built-in functions, keyword symbols, char literals, quoting), filetype detection, LSP (elisp --lsp), running, and full debugging (breakpoints, stepping, variables) via elisp --dap.",
+  "version": "0.1.0",
+  "publisher": "MenkeTechnologies",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Debuggers"
+  ],
+  "keywords": [
+    "elisp",
+    "emacs-lisp",
+    "elisprs",
+    "lisp",
+    "lsp",
+    "debug"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MenkeTechnologies/vscode-elisp.git"
+  },
+  "homepage": "https://menketechnologies.github.io/vscode-elisp/",
+  "bugs": {
+    "url": "https://github.com/MenkeTechnologies/vscode-elisp/issues"
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:elisp",
+    "onDebugResolve:elisp",
+    "onDebugDynamicConfigurations:elisp"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "elisp",
+        "aliases": [
+          "Emacs Lisp",
+          "elisp"
+        ],
+        "extensions": [
+          ".el"
+        ],
+        "filenames": [
+          ".emacs",
+          "_emacs"
+        ],
+        "firstLine": "^#!.*\\belisp\\b",
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "elisp",
+        "scopeName": "source.elisp",
+        "path": "./syntaxes/elisp.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Emacs Lisp",
+      "properties": {
+        "elisp.path": {
+          "type": "string",
+          "default": "elisp",
+          "description": "Path to the elisp executable used for the language server, running, and debugging."
+        },
+        "elisp.lsp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Start the elisp language server (elisp --lsp). Disable to use syntax highlighting only."
+        },
+        "elisp.lsp.args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "--lsp"
+          ],
+          "description": "Arguments passed to the elisp executable to start the language server."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "elisp.run",
+        "title": "Run File",
+        "category": "Emacs Lisp",
+        "icon": "$(play)"
+      },
+      {
+        "command": "elisp.debug",
+        "title": "Debug File",
+        "category": "Emacs Lisp",
+        "icon": "$(debug-alt)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "elisp.run",
+        "key": "ctrl+f5",
+        "mac": "ctrl+f5",
+        "when": "editorLangId == elisp"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "elisp.run",
+          "when": "resourceLangId == elisp",
+          "group": "navigation@1"
+        },
+        {
+          "command": "elisp.debug",
+          "when": "resourceLangId == elisp",
+          "group": "navigation@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "elisp.run",
+          "when": "editorLangId == elisp"
+        },
+        {
+          "command": "elisp.debug",
+          "when": "editorLangId == elisp"
+        }
+      ]
+    },
+    "breakpoints": [
+      {
+        "language": "elisp"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "elisp",
+        "label": "Emacs Lisp",
+        "languages": [
+          "elisp"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Absolute path to the .el file to debug.",
+                "default": "${file}"
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Command-line arguments passed to the program.",
+                "default": []
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Working directory for the debugged program.",
+                "default": "${workspaceFolder}"
+              },
+              "stopOnEntry": {
+                "type": "boolean",
+                "description": "Break on the first form of the program.",
+                "default": false
+              },
+              "noDebug": {
+                "type": "boolean",
+                "description": "Run without the debugger (ignore breakpoints).",
+                "default": false
+              },
+              "interpreterArgs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Extra arguments passed to the elisp interpreter itself.",
+                "default": []
+              },
+              "elispPath": {
+                "type": "string",
+                "description": "Override the elisp executable for this debug session. Defaults to the resolved \"elisp.path\"."
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "elisp",
+            "request": "launch",
+            "name": "Emacs Lisp: Debug Current File",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "Emacs Lisp: Debug Current File",
+            "description": "Debug the active .el file with elisp --dap",
+            "body": {
+              "type": "elisp",
+              "request": "launch",
+              "name": "Emacs Lisp: Debug Current File",
+              "program": "^\"\\${file}\"",
+              "cwd": "^\"\\${workspaceFolder}\"",
+              "stopOnEntry": false
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "echo no build step"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.2.1",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.1.0"
+  }
+}

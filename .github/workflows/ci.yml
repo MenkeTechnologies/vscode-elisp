@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq bash shellcheck
+          npm install
+
+      - name: Validate JSON (package + grammar + language config)
+        run: |
+          set -euo pipefail
+          jq -e . package.json > /dev/null
+          jq -e . language-configuration.json > /dev/null
+          jq -e . syntaxes/elisp.tmLanguage.json > /dev/null
+          echo "all JSON valid"
+
+      - name: shellcheck scripts + tests
+        run: |
+          set -euo pipefail
+          shellcheck --severity=error tests/*.sh
+
+      - name: Tokenize sample with vscode-textmate (asserts scopes)
+        run: node scripts/tokenize_test.js
+
+      - name: Extension unit tests (resolver + LSP spawn-contract regressions)
+        run: node --test scripts/resolver_test.js scripts/activate_test.js
+
+      - name: README / docs / workflow validators
+        run: |
+          set -euo pipefail
+          fail=0
+          for t in tests/*.sh; do
+            echo "== $t =="
+            bash "$t" || fail=1
+          done
+          exit "$fail"
+
+      - name: Package the extension (.vsix) and verify the runtime dep is bundled
+        # Must NOT use --no-dependencies: extension.js does
+        # `require('vscode-languageclient/node')`, which VS Code does NOT
+        # provide. Packaging without the dependency yields a .vsix whose
+        # activation throws at load ("Cannot find module") — no commands, no
+        # LSP, no debug. The grep below fails CI if the dep ever goes missing.
+        run: |
+          set -euo pipefail
+          npx --yes @vscode/vsce package -o /tmp/vscode-elisp.vsix
+          if [ "$(unzip -l /tmp/vscode-elisp.vsix | grep -c 'vscode-languageclient/lib')" -eq 0 ]; then
+            echo "::error::packaged .vsix is missing vscode-languageclient — activation would throw"
+            exit 1
+          fi
+          echo "vsix bundles vscode-languageclient"

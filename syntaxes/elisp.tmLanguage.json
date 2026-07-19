@@ -1,0 +1,81 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "elisp",
+  "scopeName": "source.elisp",
+  "fileTypes": [
+    "el",
+    "emacs"
+  ],
+  "patterns": [
+    { "include": "#shebang" },
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#char" },
+    { "include": "#keyword-symbol" },
+    { "include": "#numbers" },
+    { "include": "#quote" },
+    { "include": "#definitions" },
+    { "include": "#special-forms" },
+    { "include": "#subrs" },
+    { "include": "#constants" }
+  ],
+  "repository": {
+    "shebang": {
+      "match": "\\A#!.*$",
+      "name": "comment.line.shebang.elisp"
+    },
+    "comments": {
+      "match": ";.*$",
+      "name": "comment.line.semicolon.elisp"
+    },
+    "strings": {
+      "name": "string.quoted.double.elisp",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "match": "\\\\.", "name": "constant.character.escape.elisp" }
+      ]
+    },
+    "char": {
+      "match": "\\?(\\\\(\\^|[CMSsHA]-)*)?(\\\\[0-7]+|\\\\x[0-9A-Fa-f]+|\\\\?.)",
+      "name": "constant.character.elisp"
+    },
+    "keyword-symbol": {
+      "match": "(?<![-+*/<>=?!%\\w]):[-+*/<>=?!%\\w]+",
+      "name": "constant.other.keyword.elisp"
+    },
+    "numbers": {
+      "patterns": [
+        { "match": "#[xX][0-9A-Fa-f]+", "name": "constant.numeric.hex.elisp" },
+        { "match": "#[oO][0-7]+", "name": "constant.numeric.octal.elisp" },
+        { "match": "#[bB][01]+", "name": "constant.numeric.binary.elisp" },
+        { "match": "#[0-9]+[rR][0-9A-Za-z]+", "name": "constant.numeric.radix.elisp" },
+        { "match": "(?<![-+*/<>=?!%\\w])[-+]?[0-9]+\\.[0-9]*([eE][-+]?[0-9]+)?(?![-+*/<>=?!%\\w])", "name": "constant.numeric.float.elisp" },
+        { "match": "(?<![-+*/<>=?!%\\w])[-+]?[0-9]+\\.?(?![-+*/<>=?!%\\w])", "name": "constant.numeric.integer.elisp" }
+      ]
+    },
+    "quote": {
+      "match": "#'|,@|['`,]",
+      "name": "keyword.operator.quote.elisp"
+    },
+    "definitions": {
+      "match": "(?<=\\()\\s*(defun|defmacro|defsubst|defalias|defvar|defconst|defcustom|defvar-local|defgroup|defface|cl-defun|cl-defmacro)\\s+([^\\s()']+)",
+      "captures": {
+        "1": { "name": "keyword.control.elisp" },
+        "2": { "name": "entity.name.function.elisp" }
+      }
+    },
+    "special-forms": {
+      "match": "(?<=\\()(function|defmacro|defconst|unless|lambda|defvar|while|quote|progn|let\\*|defun|when|setq|cond|let|and|or|if)(?![-+*/<>=?!%\\w])",
+      "name": "keyword.control.elisp"
+    },
+    "subrs": {
+      "match": "(?<![-+*/<>=?!%\\w'])(buffer-substring-no-properties|replace-regexp-in-string|shell-command-to-string|line-beginning-position|base64url-encode-string|base64url-decode-string|--push-output-capture--|--pop-output-capture--|--current-directory--|insert-file-contents|base64-encode-string|base64-decode-string|skip-chars-backward|current-time-string|--invocation-file--|--directory-files--|special-variable-p|skip-chars-forward|re-search-backward|line-number-at-pos|format-time-string|url-hexify-string|re-search-forward|line-end-position|intercept-proceed|indirect-variable|indirect-function|hash-table-values|file-executable-p|beginning-of-line|url-unhex-string|string-to-vector|string-to-number|read-from-string|number-to-string|intercept-remove|hash-table-count|file-directory-p|char-uppercase-p|char-or-string-p|buffer-substring|symbol-function|string-suffix-p|string-prefix-p|string-distance|search-backward|save-match-data|prin1-to-string|match-beginning|make-hash-table|intercept-clear|hash-table-test|hash-table-keys|file-writable-p|file-readable-p|copy-hash-table|compare-strings|string-to-list|string-to-char|string-match-p|string-empty-p|special-form-p|set-match-data|search-forward|make-directory|intercept-list|file-symlink-p|file-regular-p|current-column|char-to-string|string-search|replace-match|process-lines|file-exists-p|delete-region|buffer-string|backward-word|backward-char|write-region|symbol-value|sxhash-equal|string-match|split-string|regexp-quote|match-string|looking-at-p|hash-table-p|forward-word|forward-line|forward-char|erase-buffer|current-time|call-process|symbol-name|string-join|secure-hash|rename-file|make-vector|make-symbol|make-string|intern-soft|insert-char|end-of-line|encode-time|delete-file|delete-char|defvaralias|decode-time|count-lines|cl-struct-p|char-before|buffer-size|user-error|sxhash-eql|subr-arity|match-data|makunbound|looking-at|func-arity|float-time|char-equal|char-after|sxhash-eq|substring|point-min|point-max|match-end|intercept|goto-char|functionp|ftruncate|fillarray|copy-file|truncate|logcount|integerp|identity|fceiling|downcase|copysign|vectorp|vconcat|type-of|symbolp|stringp|reverse|remhash|recordp|puthash|pos-eol|pos-bol|numberp|message|gethash|funcall|fboundp|clrhash|ceiling|vector|upcase|terpri|sxhash|string|signal|setenv|setcdr|setcar|random|macrop|logxor|lognot|logior|logand|length|intern|insert|getenv|fround|format|floatp|ffloor|concat|boundp|append|zerop|throw|subrp|round|print|princ|prin1|point|pcase|listp|ldexp|isnan|frexp|floor|float|error|equal|consp|apply|sqrt|sha1|read|null|logb|list|fset|expt|eval|eolp|eobp|cons|bolp|bobp|atom|atan|asin|aset|aref|acos|tan|sin|set|nth|not|mod|md5|lsh|log|exp|eql|cos|cdr|car|ash|abs|1\\+|eq|1-|>=|<=|\\+|\\*|>|=|<|%|/|-)(?![-+*/<>=?!%\\w])",
+      "name": "support.function.elisp"
+    },
+    "constants": {
+      "match": "(?<![-+*/<>=?!%\\w])(t|nil)(?![-+*/<>=?!%\\w])",
+      "name": "constant.language.elisp"
+    }
+  }
+}
