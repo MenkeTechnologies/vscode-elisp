@@ -223,7 +223,7 @@
     "vscode:prepublish": "echo no build step"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1"
+    "vscode-languageclient": "^10.1.0"
   },
   "devDependencies": {
     "@vscode/vsce": "^3.2.1",
