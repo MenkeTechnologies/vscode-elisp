@@ -51,7 +51,7 @@ The grammar covers the Emacs Lisp surface: the special forms (`defun`, `defmacro
 | Config | `elisp.path`, `elisp.lsp.enabled`, `elisp.lsp.args` |
 
 > The language server needs the `elisp` binary. The extension resolves it from
-> `$PATH` plus the common install locations (`/opt/homebrew/bin`, `/usr/local/bin`,
+> `$PATH` plus the common install locations (`/opt/homebrew/bin`, `/usr/local/bin`, `/usr/bin`,
 > `~/.cargo/bin`, `~/.local/bin`) — so it works even when the editor is launched
 > from the macOS Dock / Finder, which doesn't inherit your shell `$PATH`. Install
 > with `brew install menketechnologies/menketech/elisprs`. If it lives elsewhere,
